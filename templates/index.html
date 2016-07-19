@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="/static/script.js"></script>
+    <style>
+        li{
+            padding-bottom: 100px;
+        }
+    </style>
+</head>
+
+<body>
+<div id="posts" style="height: 1000px">
+
+</div>
+
+</body>
+<script>
+    var tot_pag = 0;
+    var api_count = 1;
+    var win = $(window);
+    $.ajax({
+        url: 'http://127.0.0.1:8000/api/theme/?page=1',
+        method: 'get',
+        contentType: "application/json",
+        success: function (res) {
+            tot_pag = res.total_pages;
+            $.each(res.data, function (i, value) {
+                $('#posts').append("<li >" + value.theme_name + "</li>");
+            });
+        },
+        async: false
+    });
+
+
+    win.scroll(function () {
+        if ($(window).scrollTop() >= $(document).height() - $(window).height() - 10) {
+            api_count++;
+            if (api_count <= tot_pag) {
+                $.ajax({
+                    url: 'http://127.0.0.1:8000/api/theme/?page='+api_count,
+                    method: 'get',
+                    contentType: "application/json",
+                    success: function (res) {
+                        tot_pag = res.total_pages;
+                        $.each(res.data, function (i, value) {
+                            $('#posts').append("<li>" + value.theme_name + "</li>");
+                        });
+                    },
+                    async: false
+                })
+            }
+
+        }
+    })
+
+
+</script>
+</html>
